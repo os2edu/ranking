@@ -45,7 +45,7 @@ export default function Home() {
       .then(async res => {
         let arr: any[] = [];
         for(let i in res) {
-          arr[i] = {
+          arr[parseInt(i)] = {
             index: parseInt(i) + 1,
             name: res[i],
             rate: await getQuestionPassRate(res[i])

@@ -21,9 +21,8 @@ export default function Home() {
             <p>秋季训练营 Rustlings 训练</p>
           </a>
         </div>
-
-        
       </main>
+      
       <p className={styles.description}>
           2022 OS 夏季训练营排行榜{' '}
           <a href='https://learningos.github.io/classroom-grading/'>点击查看</a>

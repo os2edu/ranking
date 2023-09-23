@@ -11,10 +11,10 @@ const Nav = () => {
       key: '/',
       label: '首页'
     },
-    {
-      key: '/rank',
-      label: '排名'
-    },
+    // {
+    //   key: '/rank',
+    //   label: '排名'
+    // },
     {
       key: '/list',
       label: '题目列表'
