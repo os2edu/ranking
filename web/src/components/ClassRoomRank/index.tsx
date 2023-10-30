@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react'
 import { Table, Modal, Input } from 'antd'
 import dayjs from 'dayjs'
-import { orderBy } from 'lodash'
+import { orderBy, toInteger } from 'lodash'
 import './index.less'
 import Icon from '../Icon'
 import type { ColumnsType } from 'antd/lib/table'
@@ -15,6 +15,7 @@ interface StudentInfo {
   grades: any
   rank?: number
   total?: number
+  lastUpdateAt?: number
 }
 
 interface IProps {
@@ -57,6 +58,18 @@ const ClassRoomRank = (props: IProps) => {
         }
       },
       {
+        title: '',
+        align: 'center',
+        dataIndex: 'name',
+        fixed: true,
+        width: 50,
+        key: 'repoOwner',
+        colSpan: 0,
+        render(text: string, record: StudentInfo) {
+          return <AvatarInfo rank={record.rank} avatarURL={record.avatar} name='' />
+        }
+      },
+      {
         title: '学生',
         align: 'center',
         dataIndex: 'name',
@@ -64,7 +77,7 @@ const ClassRoomRank = (props: IProps) => {
         width: 150,
         key: 'repoOwner',
         render(text: string, record: StudentInfo) {
-          return <AvatarInfo rank={record.rank} avatarURL={record.avatar} name={text} />
+          return <AvatarInfo rank={record.rank} avatarURL='' name={text} />
         }
       },
       {
@@ -86,7 +99,7 @@ const ClassRoomRank = (props: IProps) => {
         return {
           title: item,
           dataIndex: `assignments-${item}`,
-          width: 200,
+          width: 130,
           align: 'center',
           key: '',
           render(_text: string, record: StudentInfo) {
@@ -94,10 +107,25 @@ const ClassRoomRank = (props: IProps) => {
             if(grade) {
               return <span>{grade}</span>
             }
-            return <span>-</span>
+            return <span>0</span>
           }
         }
       }) as ColumnsType<StudentInfo>),
+      {
+        title: '最后提交时间',
+        align: 'center',
+        dataIndex: 'lastUpdateAt',
+        fixed: false,
+        width: 200,
+        key: 'lastUpdateAt',
+        render(text: number | null | undefined, record: StudentInfo) {
+          if(text == null || text == undefined || text == 0) {
+            return '-';
+          }
+          return dayjs(text).locale("Asia/Beijing").format("YYYY/MM/DD HH:mm");
+          // return <AvatarInfo rank={record.rank} avatarURL={record.avatar} name={text} />
+        }
+      },
       {
         title: '',
         dataIndex: 'none',
@@ -112,12 +140,12 @@ const ClassRoomRank = (props: IProps) => {
     const studentsList = props.students.map((item, index) => {
       let total = 0;
       for(let i in item.grades) {
-        total += item.grades[i];
+        total += toInteger(item.grades[i]);
       }
       item['total'] = total;
       return item;
     });
-    let students = orderBy(studentsList, ['total'], 'desc');
+    let students = orderBy(studentsList, ['total', 'lastUpdateAt'], ['desc', 'asc']);
     for(let i = 0; i < students.length; i++) {
       students[i].rank = i + 1;
     }
@@ -154,7 +182,7 @@ const ClassRoomRank = (props: IProps) => {
               最新数据更新时间:
               {props.latestUpdatedAt && (
                 <span style={{ marginLeft: 10, fontWeight: 'bold' }}>
-                  {dayjs(props.latestUpdatedAt).format('YYYY-MM-DD HH:mm::ss')}
+                  {dayjs(props.latestUpdatedAt).format('YYYY-MM-DD HH:mm:ss')}
                 </span>
               )}
             </span>
